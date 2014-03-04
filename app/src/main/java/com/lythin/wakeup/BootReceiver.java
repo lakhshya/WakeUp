@@ -8,8 +8,8 @@ import android.content.Intent;
 public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            MainActivity.DB=Database.revive(MainActivity.DB,context);
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            MainActivity.DB=Database.getInstance(context);
             AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             MainActivity.DB.registerAlarmsWithManager(alarmMgr,context);
         }

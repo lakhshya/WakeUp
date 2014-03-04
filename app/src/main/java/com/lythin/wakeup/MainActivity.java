@@ -66,7 +66,7 @@ public class MainActivity extends FragmentActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        DB = DB.revive(DB, this);
+        DB = Database.getInstance(this);
         Log.i("Test", "MainActivity 1");
 
         if (DB.isAlarmInProgress()) {

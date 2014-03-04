@@ -25,6 +25,7 @@ public class Database {
     private SharedPreferences.Editor editor;
     private ArrayList<Alarm> alarms;
     private boolean alarmInProgress;
+    private static Database instance=null;
 
     private Database(Context ctx) {
         setContext(ctx);
@@ -55,11 +56,13 @@ public class Database {
         }
     }
 
-    public static Database revive(Database db, Context context) {
-        if (db == null)
-            return new Database(context);
-        db.setContext(context);
-        return db;
+    public static synchronized Database getInstance(Context context) {
+        if (instance == null)
+                instance = new Database(context);
+        else {
+            instance.setContext(context);
+        }
+        return instance;
     }
 
     public ArrayList<Alarm> getAlarms() {
