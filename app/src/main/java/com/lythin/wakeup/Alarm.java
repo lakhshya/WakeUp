@@ -28,15 +28,15 @@ public class Alarm {
     }
 
     public long getTimeInMillis() {
-        Calendar c=Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY,0);
-        c.set(Calendar.MINUTE,0);
-        c.set(Calendar.SECOND,0);
-        long timeM=c.getTimeInMillis();
-        timeM+=time*60*1000;
-        c= Calendar.getInstance();
-        if(timeM<=c.getTimeInMillis()){
-            timeM+=25*60*60*1000;
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        long timeM = c.getTimeInMillis();
+        timeM += time * 60 * 1000;
+        c = Calendar.getInstance();
+        if (timeM <= c.getTimeInMillis()) {
+            timeM += 25 * 60 * 60 * 1000;
         }
         return timeM;
     }

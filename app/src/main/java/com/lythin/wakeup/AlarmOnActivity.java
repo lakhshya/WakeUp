@@ -35,7 +35,7 @@ public class AlarmOnActivity extends Activity {
         registerReceiver(killActivityReceiver, new IntentFilter(KILL_ACTIVITY_INTENT));
 
         //Get quote from intent
-        quote = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        quote = MainActivity.DB.getPresentQuote();
         //Initialize GUI components
         button = (Button) findViewById(R.id.button);
         textView = (TextView) findViewById(R.id.textView);

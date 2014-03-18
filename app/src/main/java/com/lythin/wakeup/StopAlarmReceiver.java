@@ -12,7 +12,7 @@ public class StopAlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (MainActivity.DB.isAlarmInProgress()) {
             //Disable DB.alarmOn
-            MainActivity.DB.setAlarmInProgress(false);
+            MainActivity.DB.setAlarmInProgress(false,null);
 
             //Send killService broadcast
             intentService = new Intent(AlarmOnService.KILL_SERVICE_INTENT);

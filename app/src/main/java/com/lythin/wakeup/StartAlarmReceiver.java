@@ -11,19 +11,19 @@ public class StartAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(!MainActivity.DB.isAlarmInProgress()) {
+        if (!MainActivity.DB.isAlarmInProgress()) {
 
             //Enabling DB.alarmOn
-            MainActivity.DB.setAlarmInProgress(true);
+            MainActivity.DB.setAlarmInProgress(true, intent.getStringExtra(Intent.EXTRA_TEXT));
 
             //Starting the Service
-            intentService=new Intent(context,AlarmOnService.class);
+            intentService = new Intent(context, AlarmOnService.class);
             context.startService(intentService);
 
             //Starting the Activity
-            intentActivity=new Intent(context,AlarmOnActivity.class);
+            intentActivity = new Intent(context, AlarmOnActivity.class);
             intentActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intentActivity.putExtra(Intent.EXTRA_TEXT,intent.getStringExtra(Intent.EXTRA_TEXT));
+            intentActivity.putExtra(Intent.EXTRA_TEXT, intent.getStringExtra(Intent.EXTRA_TEXT));
             Log.i("Test", intent.getStringExtra(Intent.EXTRA_TEXT));
             context.startActivity(intentActivity);
             abortBroadcast();

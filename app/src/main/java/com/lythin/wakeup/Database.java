@@ -1,23 +1,22 @@
 package com.lythin.wakeup;
 
-import java.util.ArrayList;
-
 import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+
+import java.util.ArrayList;
 
 public class Database {
 
-    public static final String PREFS_NAME = "DATABASE_PREFS";
-    public static final String CHECK_FIRST_RUN = "CHECK_FIRST_RUN";
-    public static final String QUOTE = "QUOTE";
-    public static final String NO_OF_QUOTES = "NO_OF_QUOTES";
-    public static final String ALARM_TIME = "ALARM_TIME";
-    public static final String ALARM_QUOTE = "ALARM_QUOTE";
-    public static final String ALARM_ENABLED = "ALARM_ENABLED";
-    public static final String NO_OF_ALARMS = "NO_OF_ALARMS";
+    public static final String PREFS_NAME = "com.lythin.wakeup.DATABASE_PREFS";
+    public static final String CHECK_FIRST_RUN = "com.lythin.wakeup.CHECK_FIRST_RUN";
+    public static final String QUOTE = "com.lythin.wakeup.QUOTE";
+    public static final String NO_OF_QUOTES = "com.lythin.wakeup.NO_OF_QUOTES";
+    public static final String ALARM_TIME = "com.lythin.wakeup.ALARM_TIME";
+    public static final String ALARM_QUOTE = "com.lythin.wakeup.ALARM_QUOTE";
+    public static final String ALARM_ENABLED = "com.lythin.wakeup.ALARM_ENABLED";
+    public static final String NO_OF_ALARMS = "com.lythin.wakeup.NO_OF_ALARMS";
+    public static final String PRESENT_QUOTE = "com.lythin.wakeup.PRESENT_QUOTE";
 
     private ArrayList<String> quotes;
     private Context context;
@@ -25,7 +24,7 @@ public class Database {
     private SharedPreferences.Editor editor;
     private ArrayList<Alarm> alarms;
     private boolean alarmInProgress;
-    private static Database instance=null;
+    private static Database instance = null;
 
     private Database(Context ctx) {
         setContext(ctx);
@@ -58,7 +57,7 @@ public class Database {
 
     public static synchronized Database getInstance(Context context) {
         if (instance == null)
-                instance = new Database(context);
+            instance = new Database(context);
         else {
             instance.setContext(context);
         }
@@ -103,8 +102,16 @@ public class Database {
         return alarmInProgress;
     }
 
-    public void setAlarmInProgress(boolean alarmInProgress) {
+    public void setAlarmInProgress(boolean alarmInProgress, String quote) {
         this.alarmInProgress = alarmInProgress;
+        if(alarmInProgress){
+            editor.putString(PRESENT_QUOTE,quote);
+            editor.commit();
+        }
+    }
+
+    public String getPresentQuote() {
+        return settings.getString(PRESENT_QUOTE,"");
     }
 
     public boolean setAlarmEnabled(int position, boolean enabled) {

@@ -145,10 +145,9 @@ public class MainActivity extends FragmentActivity {
                             CheckBox cb = (CheckBox) v;
                             DB.setAlarmEnabled(position, cb.isChecked());
                             Alarm alarm = DB.getAlarm(position);
-                            if(cb.isChecked()) {
+                            if (cb.isChecked()) {
                                 alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), 24 * 60 * 60 * 1000, alarm.generatePI(MainActivity.this));
-                            }
-                            else {
+                            } else {
                                 alarmMgr.cancel(alarm.generatePI(MainActivity.this));
                                 //DB.registerAlarmsWithManager(alarmMgr,MainActivity.this);
                             }

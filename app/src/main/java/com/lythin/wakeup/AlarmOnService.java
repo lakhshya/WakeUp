@@ -36,7 +36,7 @@ public class AlarmOnService extends Service {
         //Register the kill register
         registerReceiver(killServiceReceiver, new IntentFilter(KILL_SERVICE_INTENT));
         Log.i("Test", "Service 2");
-        am=(AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         playSound();
         Log.i("Test", "Service 3");
@@ -91,7 +91,7 @@ public class AlarmOnService extends Service {
             mediaPlayer = MediaPlayer.create(this, R.raw.willrock);
             mediaPlayer.setLooping(true);
         }
-        am.adjustVolume(AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
+        am.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
         mediaPlayer.start();
         mediaPlayer.setScreenOnWhilePlaying(true);
     }
