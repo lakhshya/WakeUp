@@ -77,15 +77,6 @@ public class AlarmOnService extends Service {
 
     }
 
-    final BroadcastReceiver killServiceReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            stopAlarm();
-            unregisterReceiver(killServiceReceiver);
-            stopSelf();
-        }
-    };
-
     private void playSound() {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, R.raw.willrock);
@@ -127,6 +118,15 @@ public class AlarmOnService extends Service {
             }
         }).start();
     }
+
+    final BroadcastReceiver killServiceReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            stopAlarm();
+            unregisterReceiver(killServiceReceiver);
+            stopSelf();
+        }
+    };
 
 
 }
