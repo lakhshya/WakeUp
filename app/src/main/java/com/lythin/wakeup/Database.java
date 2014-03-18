@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Database {
 
@@ -17,14 +18,13 @@ public class Database {
     public static final String ALARM_ENABLED = "com.lythin.wakeup.ALARM_ENABLED";
     public static final String NO_OF_ALARMS = "com.lythin.wakeup.NO_OF_ALARMS";
     public static final String PRESENT_QUOTE = "com.lythin.wakeup.PRESENT_QUOTE";
-
+    private static Database instance = null;
     private ArrayList<String> quotes;
     private Context context;
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
     private ArrayList<Alarm> alarms;
     private boolean alarmInProgress;
-    private static Database instance = null;
 
     private Database(Context ctx) {
         setContext(ctx);
@@ -46,8 +46,9 @@ public class Database {
 
         } else {
             int num = settings.getInt(NO_OF_QUOTES, 0);
-            for (int i = 0; i < num; i++)
+            for (int i = 0; i < num; i++) {
                 quotes.add(settings.getString(QUOTE + i, null));
+            }
             num = settings.getInt(NO_OF_ALARMS, 0);
             for (int i = 0; i < num; i++) {
                 alarms.add(new Alarm(settings.getInt(ALARM_TIME + i, 0), settings.getString(ALARM_QUOTE + i, null), settings.getBoolean(ALARM_ENABLED + i, false)));
@@ -104,14 +105,14 @@ public class Database {
 
     public void setAlarmInProgress(boolean alarmInProgress, String quote) {
         this.alarmInProgress = alarmInProgress;
-        if(alarmInProgress){
-            editor.putString(PRESENT_QUOTE,quote);
+        if (alarmInProgress) {
+            editor.putString(PRESENT_QUOTE, quote);
             editor.commit();
         }
     }
 
     public String getPresentQuote() {
-        return settings.getString(PRESENT_QUOTE,"");
+        return settings.getString(PRESENT_QUOTE, "");
     }
 
     public boolean setAlarmEnabled(int position, boolean enabled) {
@@ -153,37 +154,57 @@ public class Database {
         addAlarm(1000, quotes.get(2), true);
     }
 
-    public ArrayList<String> getQuotes() {
-        return (ArrayList<String>) quotes.clone();
-    }
-
     public ArrayList<String> getQuotesRef() {
         return quotes;
     }
 
     public boolean addNewQuote(String quote) {
+        boolean res = false;
         int num = settings.getInt(NO_OF_QUOTES, 0);
-        editor.putString(QUOTE + num, quote);
-        editor.putInt(NO_OF_QUOTES, num + 1);
-        boolean res = editor.commit();
-        quotes.add(quote);
+        int pos = Collections.binarySearch(quotes, quote);
+        if (pos < 0) {
+            pos = -pos - 1;
+            quotes.add(pos, quote);
+            for (int i = pos; i < num + 1; i++) {
+                editor.putString(QUOTE + i, quotes.get(i));
+            }
+            editor.putInt(NO_OF_QUOTES, num + 1);
+            res = editor.commit();
+        }
         return res;
     }
 
     public boolean editQuote(int position, String quote) {
-        editor.putString(QUOTE + position, quote);
-        boolean res = editor.commit();
-        quotes.set(position, quote);
+        boolean res = false;
+        int posIn = Collections.binarySearch(quotes, quote);
+        if (posIn < 0) {
+            posIn = -posIn - 1;
+            quotes.add(posIn, quote);
+            quotes.remove(position);
+            if (posIn > position) {
+                for (int i = position; i <= posIn; i++) {
+                    editor.putString(QUOTE + i, quotes.get(i));
+                }
+            } else {
+                for (int i = posIn; i <= position; i++) {
+                    editor.putString(QUOTE + i, quotes.get(i));
+                }
+            }
+            res = editor.commit();
+        }
         return res;
     }
 
     public boolean removeQuote(int position) {
         int num = settings.getInt(NO_OF_QUOTES, 0);
-        editor.putString(QUOTE + position, settings.getString(QUOTE + (num - 1), null));
-        editor.remove(QUOTE + (num - 1));
-        editor.putInt(NO_OF_QUOTES, num - 1);
-        boolean res = editor.commit();
+        boolean res = false;
         quotes.remove(position);
+        for (int i = position; i < num - 1; i++) {
+            editor.putString(QUOTE + i, quotes.get(i));
+        }
+        editor.putInt(NO_OF_QUOTES, num - 1);
+        editor.remove(QUOTE + (num - 1));
+        res = editor.commit();
         return res;
     }
 
