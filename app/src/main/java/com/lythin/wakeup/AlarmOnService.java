@@ -9,18 +9,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 public class AlarmOnService extends Service {
 
     public static final String KILL_SERVICE_INTENT = "KILL_SERVICE_INTENT";
-    static MediaPlayer mediaPlayer;
-    AudioManager am;
-    Handler handler;
+    private MediaPlayer mMediaPlayer;
+    private int mVolume;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -32,22 +35,48 @@ public class AlarmOnService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         int res = super.onStartCommand(intent, flags, startId);
 
-        Log.i("Test", "Service 1");
         //Register the kill register
         registerReceiver(killServiceReceiver, new IntentFilter(KILL_SERVICE_INTENT));
-        Log.i("Test", "Service 2");
-        am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        playSound();
-        Log.i("Test", "Service 3");
+        playSound(this, getAlarmUri());
 
-        handler = new Handler() {
+        return res;
+    }
+
+    private void stopAlarm() {
+        //Stop media player and release resources and memory
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
+        mMediaPlayer = null;
+
+    }
+
+    private void playSound(final Context context, final Uri alert) {
+        final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        mVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+        if (mVolume == 0)
+            mVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        try {
+            if (mMediaPlayer == null) {
+                mMediaPlayer = new MediaPlayer();
+                mMediaPlayer.setDataSource(context, alert);
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+                mMediaPlayer.setLooping(true);
+                mMediaPlayer.prepare();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                playSound();
+                audioManager.setStreamVolume(AudioManager.STREAM_ALARM, mVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                mMediaPlayer.start();
             }
-
         };
 
         new Thread(new Runnable() {
@@ -62,33 +91,27 @@ public class AlarmOnService extends Service {
                 stopAlarm();
             }
         }).start();
-        Log.i("Test", "Service 4");
-
-        return res;
-    }
-
-    private void stopAlarm() {
-        //Stop media player and release resources and memory
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
-        mediaPlayer = null;
 
     }
 
-    private void playSound() {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, R.raw.willrock);
-            mediaPlayer.setLooping(true);
+    //Get an alarm sound. Try for an alarm. If none set, try notification,
+    //Otherwise, ringtone.
+    private Uri getAlarmUri() {
+        Uri alert = RingtoneManager
+                .getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alert == null) {
+            alert = RingtoneManager
+                    .getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            if (alert == null) {
+                alert = RingtoneManager
+                        .getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            }
         }
-        am.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
-        mediaPlayer.start();
-        mediaPlayer.setScreenOnWhilePlaying(true);
+        return alert;
     }
 
     private void ensureActivity() {
-        handler = new Handler() {
+        final Handler handler = new Handler() {
             ActivityManager am = (ActivityManager) MainActivity.DB.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
 
             @Override
