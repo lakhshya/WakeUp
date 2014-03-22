@@ -38,12 +38,13 @@ public class Database {
 
 
         if (firstRun) {
-            editor.putBoolean(CHECK_FIRST_RUN, false);
             editor.putInt(NO_OF_QUOTES, 0);
             editor.putInt(NO_OF_ALARMS, 0);
             editor.commit();
             initializeQuotesAndAlarms();
-
+            registerAlarmsWithManager((AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE), ctx);
+            editor.putBoolean(CHECK_FIRST_RUN, false);
+            editor.commit();
         } else {
             int num = settings.getInt(NO_OF_QUOTES, 0);
             for (int i = 0; i < num; i++) {
