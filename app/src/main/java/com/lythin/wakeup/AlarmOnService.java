@@ -110,38 +110,6 @@ public class AlarmOnService extends Service {
         return alert;
     }
 
-    private void ensureActivity() {
-        final Handler handler = new Handler() {
-            ActivityManager am = (ActivityManager) MainActivity.DB.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
-
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                String packageName = am.getRunningTasks(1).get(0).topActivity.getPackageName().toLowerCase();
-                if (!packageName.equalsIgnoreCase("com.lythin.wakeup")) {
-                    Toast.makeText(getApplicationContext(), packageName,
-                            Toast.LENGTH_SHORT).show();
-                    Log.e("abcd", packageName);
-//                    startActivity(intentAlarmActivity);
-                }
-
-            }
-
-        };
-
-        new Thread(new Runnable() {
-            public void run() {
-                while (MainActivity.DB.isAlarmInProgress()) {
-                    try {
-                        handler.sendEmptyMessage(0);
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
-                }
-            }
-        }).start();
-    }
-
     final BroadcastReceiver killServiceReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

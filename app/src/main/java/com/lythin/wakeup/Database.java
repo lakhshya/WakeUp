@@ -18,6 +18,7 @@ public class Database {
     public static final String ALARM_ENABLED = "com.lythin.wakeup.ALARM_ENABLED";
     public static final String NO_OF_ALARMS = "com.lythin.wakeup.NO_OF_ALARMS";
     public static final String PRESENT_QUOTE = "com.lythin.wakeup.PRESENT_QUOTE";
+
     private static Database instance = null;
     private ArrayList<String> quotes;
     private Context context;
@@ -77,18 +78,22 @@ public class Database {
     }
 
     public boolean addAlarm(int time, String quote, boolean enabled) {
-        for (Alarm alarm : alarms) {
-            if (alarm.getTime() == time) {
-                return false;
-            }
-        }
+        boolean res = false;
+        Alarm alarm = new Alarm(time, quote, enabled);
         int num = settings.getInt(NO_OF_ALARMS, 0);
-        editor.putInt(ALARM_TIME + num, time);
-        editor.putString(ALARM_QUOTE + num, quote);
-        editor.putBoolean(ALARM_ENABLED + num, enabled);
-        editor.putInt(NO_OF_ALARMS, num + 1);
-        boolean res = editor.commit();
-        alarms.add(new Alarm(time, quote, enabled));
+        int pos = Collections.binarySearch(alarms, alarm);
+        if (pos < 0) {
+            pos = -pos - 1;
+            alarms.add(pos, alarm);
+            for (int i = pos; i < num + 1; i++) {
+                Alarm temp = alarms.get(i);
+                editor.putInt(ALARM_TIME + i, temp.getTime());
+                editor.putString(ALARM_QUOTE + i, temp.getQuote());
+                editor.putBoolean(ALARM_ENABLED + i, temp.isEnabled());
+            }
+            editor.putInt(NO_OF_ALARMS, num + 1);
+            res = editor.commit();
+        }
         return res;
     }
 
@@ -137,13 +142,19 @@ public class Database {
 
     public boolean removeAlarm(int position) {
         int num = settings.getInt(NO_OF_ALARMS, 0);
-        editor.putInt(ALARM_TIME + position, settings.getInt(ALARM_TIME + (num - 1), 0));
-        editor.putString(ALARM_QUOTE + position, settings.getString(ALARM_QUOTE + (num - 1), null));
+        boolean res = false;
+        alarms.remove(position);
+        for (int i = position; i < num - 1; i++) {
+            Alarm temp = alarms.get(i);
+            editor.putInt(ALARM_TIME + i, temp.getTime());
+            editor.putString(ALARM_QUOTE + i, temp.getQuote());
+            editor.putBoolean(ALARM_ENABLED + i, temp.isEnabled());
+        }
+        editor.putInt(NO_OF_ALARMS, num - 1);
         editor.remove(ALARM_QUOTE + (num - 1));
         editor.remove(ALARM_TIME + (num - 1));
-        editor.putInt(NO_OF_ALARMS, num - 1);
-        boolean res = editor.commit();
-        alarms.remove(position);
+        editor.remove(ALARM_ENABLED + (num - 1));
+        res = editor.commit();
         return res;
     }
 

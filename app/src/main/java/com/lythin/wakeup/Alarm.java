@@ -9,7 +9,7 @@ import java.util.Calendar;
 /**
  * Created by Lakhshya on 2/27/14.
  */
-public class Alarm {
+public class Alarm implements Comparable<Alarm>{
     /**
      * Time in minutes of the day
      */
@@ -92,4 +92,8 @@ public class Alarm {
         return pendingIntent;
     }
 
+    @Override
+    public int compareTo(Alarm alarm) {
+        return this.getTime()-alarm.getTime();
+    }
 }
