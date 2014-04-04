@@ -37,19 +37,19 @@
         <service
             android:name="com.lythin.wakeup.AlarmOnService"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
         </service>
 
         <receiver
             android:name="com.lythin.wakeup.StartAlarmReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
         </receiver>
 
         <receiver
             android:name="com.lythin.wakeup.StopAlarmReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
         </receiver>
 
         <receiver
