@@ -1,7 +1,5 @@
 package com.lythin.wakeup;
 
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,8 +12,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 

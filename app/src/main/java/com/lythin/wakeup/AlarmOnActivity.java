@@ -41,15 +41,6 @@ public class AlarmOnActivity extends Activity {
         textView = (TextView) findViewById(R.id.textView);
         textView.setText(quote);
         editText = (EditText) findViewById(R.id.editText);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (editText.getText().toString().equals(quote)) {
-                    Intent intent = new Intent(AlarmOnActivity.this, StopAlarmReceiver.class);
-                    sendBroadcast(intent);
-                }
-            }
-        });
     }
 
     @Override
@@ -57,6 +48,13 @@ public class AlarmOnActivity extends Activity {
         super.onDestroy();
         unregisterReceiver(killActivityReceiver);
         Log.i("Test", "AlarmOnActivity.onDestroy");
+    }
+
+    public void onButtonClick(View view) {
+        if (editText.getText().toString().equals(quote)) {
+            Intent intent = new Intent(AlarmOnActivity.this, StopAlarmReceiver.class);
+            sendBroadcast(intent);
+        }
     }
 
 }
