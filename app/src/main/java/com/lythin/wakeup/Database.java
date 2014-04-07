@@ -21,14 +21,13 @@ public class Database {
 
     private static Database instance = null;
     private ArrayList<String> quotes;
-    private Context context;
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
     private ArrayList<Alarm> alarms;
     private boolean alarmInProgress;
 
-    private Database(Context ctx) {
-        setContext(ctx);
+    private Database() {
+        Context context = MyApplication.getInstance().getApplicationContext();
         settings = context.getSharedPreferences(PREFS_NAME, 0);
         editor = settings.edit();
 
@@ -43,7 +42,7 @@ public class Database {
             editor.putInt(NO_OF_ALARMS, 0);
             editor.commit();
             initializeQuotesAndAlarms();
-            registerAlarmsWithManager((AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE), ctx);
+            registerAlarmsWithManager((AlarmManager) context.getSystemService(Context.ALARM_SERVICE), context);
             editor.putBoolean(CHECK_FIRST_RUN, false);
             editor.commit();
         } else {
@@ -58,12 +57,9 @@ public class Database {
         }
     }
 
-    public static synchronized Database getInstance(Context context) {
+    public static synchronized Database getInstance() {
         if (instance == null)
-            instance = new Database(context);
-        else {
-            instance.setContext(context);
-        }
+            instance = new Database();
         return instance;
     }
 
@@ -163,7 +159,7 @@ public class Database {
         addNewQuote("B");
         addNewQuote("C");
         addAlarm(500, quotes.get(0), false);
-        addAlarm(1000, quotes.get(2), true);
+        addAlarm(1363, quotes.get(2), true);
     }
 
     public ArrayList<String> getQuotesRef() {
@@ -219,14 +215,5 @@ public class Database {
         res = editor.commit();
         return res;
     }
-
-    public Context getContext() {
-        return context;
-    }
-
-    private void setContext(Context context) {
-        this.context = context;
-    }
-
 
 }

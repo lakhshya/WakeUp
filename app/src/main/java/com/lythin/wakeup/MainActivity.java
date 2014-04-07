@@ -66,7 +66,7 @@ public class MainActivity extends FragmentActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        DB = Database.getInstance(this);
+        DB = Database.getInstance();
         Log.i("Test", "MainActivity 1");
 
         if (DB.isAlarmInProgress()) {
@@ -190,7 +190,7 @@ public class MainActivity extends FragmentActivity {
 
             //Initialize the dropdown ListView/Spinner
             spinner = (Spinner) rootView.findViewById(R.id.spinner1);
-            adapter = new ArrayAdapter<String>(MainActivity.DB.getContext(), android.R.layout.simple_expandable_list_item_1, android.R.id.text1, DB.getQuotesRef());
+            adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_expandable_list_item_1, android.R.id.text1, DB.getQuotesRef());
             spinner.setAdapter(adapter);
 
             //Initialize views
@@ -240,17 +240,17 @@ public class MainActivity extends FragmentActivity {
             listView = (ListView) rootView.findViewById(R.id.quotes_listView1);
             quotes = MainActivity.DB.getQuotesRef();
 
-            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.DB.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, quotes);
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, quotes);
 
             //Code for the New Quote button
             button = (Button) rootView.findViewById(R.id.quotes_button1);
             button.setOnClickListener(new OnClickListener() {
 
                 public void onClick(View v) {
-                    final EditText editText = new EditText(MainActivity.DB.getContext());
+                    final EditText editText = new EditText(MainActivity.this);
                     int maxLength = 50;
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-                    new AlertDialog.Builder(MainActivity.DB.getContext())
+                    new AlertDialog.Builder(MainActivity.this)
                             .setTitle("New Quote")
                             .setMessage("Enter your quote")
                             .setView(editText)
@@ -272,11 +272,11 @@ public class MainActivity extends FragmentActivity {
             listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
                 public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                    final EditText editText = new EditText(MainActivity.DB.getContext());
+                    final EditText editText = new EditText(MainActivity.this);
                     int maxLength = 50;
                     editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
                     editText.setText(quotes.get(position));
-                    new AlertDialog.Builder(MainActivity.DB.getContext())
+                    new AlertDialog.Builder(MainActivity.this)
                             .setTitle("Update Quote")
                             .setMessage("Enter your quote")
                             .setView(editText)
